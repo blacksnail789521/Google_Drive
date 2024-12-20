@@ -18,13 +18,13 @@ sorted_data = dict(sorted(unsorted_input_data_demo.items(), key=lambda item: ite
 names = list(sorted_data.keys())
 values = list(sorted_data.values())
 
-# Extract sorted k-values and WCSS values
+# Extract sorted k-values and values
 k_values = np.arange(1, len(values) + 1)
-wcss = np.array(values)
+value_array = np.array(values)
 
 # Correct diagonal line calculation
-x1, y1 = 0, wcss[0]  # Starting at the "virtual" 0th cluster for alignment
-x2, y2 = len(k_values) - 1, wcss[-1]  # Last cluster index aligns with last value
+x1, y1 = 0, value_array[0]  # Starting at the "virtual" 0th cluster for alignment
+x2, y2 = len(k_values) - 1, value_array[-1]  # Last cluster index aligns with last value
 
 # Line vector recalculation
 line_vec = np.array([x2 - x1, y2 - y1])
@@ -33,7 +33,7 @@ line_vec_norm = line_vec / np.linalg.norm(line_vec)
 # Calculate distances from each point to the diagonal line
 distances = []
 for i in range(len(k_values)):
-    point = np.array([i, wcss[i]])  # Use the index of k_values
+    point = np.array([i, value_array[i]])  # Use the index of k_values
     point_vec = point - np.array([x1, y1])
     proj_of_point = point_vec.dot(line_vec_norm)
     proj_point = proj_of_point * line_vec_norm
@@ -45,20 +45,20 @@ elbow_index = np.argmax(distances)
 
 # Plot the Elbow Criterion
 plt.figure(figsize=(8, 5))
-plt.plot(names, wcss, 'bo-', label='WCSS (Sorted)')
-plt.plot(names, wcss, 'b-')  # Line connecting points
+plt.plot(names, value_array, 'bo-', label='Values (Sorted)')
+plt.plot(names, value_array, 'b-')  # Line connecting points
 plt.axline((x1, y1), (x2, y2), color='r', linestyle='--', label='Connecting Line')
-plt.scatter(names[elbow_index], wcss[elbow_index], color='green', s=100, label='Elbow Point', zorder=5)
+plt.scatter(names[elbow_index], value_array[elbow_index], color='green', s=100, label='Elbow Point', zorder=5)
 
 # Annotate the elbow point
-plt.annotate(f"Elbow ({names[elbow_index]}, {wcss[elbow_index]})",
-             xy=(names[elbow_index], wcss[elbow_index]),
-             xytext=(elbow_index + 1, wcss[elbow_index] + 100),
+plt.annotate(f"Elbow ({names[elbow_index]}, {value_array[elbow_index]})",
+             xy=(names[elbow_index], value_array[elbow_index]),
+             xytext=(elbow_index + 1, value_array[elbow_index] + 100),
              arrowprops=dict(facecolor='black', arrowstyle="->"))
 
 plt.title('Elbow Criterion with Corrected Diagonal Line')
 plt.xlabel('Clusters')
-plt.ylabel('WCSS')
+plt.ylabel('Values')
 plt.legend()
 plt.grid(True)
 plt.show()
